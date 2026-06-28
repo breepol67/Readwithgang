@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light only">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>อ่านกับเพื่อน · ก๊องแก๊ง — Judge a Friend by Their Book Cover</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=Noto+Sans+Thai:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- PWA: manifest & theme -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#FF6B35">
+
+<!-- Icons -->
+<link rel="icon" href="/icons/icon-192.svg" sizes="192x192">
+<link rel="apple-touch-icon" href="/icons/icon-192.svg">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<style>
+  :root { color-scheme: only light; }
+  html { background: #FFF8F0 !important; }
+</style>
+<style>
+:root {
+  --bg:      #FFF8F0;
+  --bg2:     #FFEFE0;
+  --surface: #FFFFFF;
+  --text:    #2D1810;
+  --text2:   #7A5C4E;
+  --line:    #EDD8C8;
+  --accent:  #FF6B35;
+
+  --seer:  #7C6FD4;
+  --alch:  #2DB38A;
+  --mast:  #E8960A;
+  --wolf:  #E84040;
+  --witch: #52A830;
+  --phant: #7A7870;
+}
+
+* , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans Thai', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+/* ── HEADER ── */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 40px;
+  margin-bottom: 1.75rem;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(38px, 9vw, 68px);
+  font-weight: 700;
+  line-height: 1.02;
+  margin-bottom: .75rem;
+}
+.hero-title em { font-style: italic; color: var(--accent); }
+
+.hero-sub {
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text2);
+  max-width: 480px;
+  margin-bottom: 2.5rem;
+}
+
+/* ── BOOKSHELF HERO ── */
+.shelf {
+  position: relative;
+  margin-bottom: .75rem;
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 200px;
+  padding: 0 8px;
+}
+.book {
+  flex: 1;
+  border-radius: 5px 5px 2px 2px;
+  position: relative;
+  cursor: default;
+  transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12px;
+  box-shadow: inset -3px 0 6px rgba(0,0,0,.12), inset 2px 0 3px rgba(255,255,255,.25);
+}
+.book:hover { transform: translateY(-14px) rotate(-1.5deg); }
+.book .spine-sigil {
+  font-size: 26px;
+  line-height: 1;
+  margin-top: 2px;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.25));
+}
+.book .spine-label {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%) rotate(90deg);
+  transform-origin: center;
+  white-space: nowrap;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  color: #fff;
+  opacity: .95;
+  text-shadow: 0 1px 3px rgba(0,0,0,.35);
+}
+/* book heights — varied like a real shelf */
+.book:nth-child(1) { height: 92%; }
+.book:nth-child(2) { height: 100%; }
+.book:nth-child(3) { height: 86%; }
+.book:nth-child(4) { height: 96%; }
+.book:nth-child(5) { height: 90%; }
+.book:nth-child(6) { height: 100%; }
+
+.shelf-plank {
+  height: 14px;
+  background: linear-gradient(180deg, #C8956A 0%, #A6764E 100%);
+  border-radius: 3px;
+  margin-bottom: 3rem;
+  box-shadow: 0 6px 14px rgba(166,118,78,.35);
+}
+
+/* ── PICK CARDS ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text2);
+  margin-bottom: 1rem;
+}
+
+.cards {
+  display: grid;
+  gap: 14px;
+}
+
+.pick {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 22px 22px 26px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s, box-shadow .2s, border-color .2s;
+}
+.pick:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 30px rgba(45,24,16,.12);
+  border-color: var(--accent);
+}
+.pick:active { transform: scale(.99); }
+
+/* bookmark tab on left edge */
+.pick::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 22px;
+  width: 6px; height: 42px;
+  border-radius: 0 4px 4px 0;
+  background: var(--accent);
+}
+.pick.p-guide::before { background: var(--seer); }
+.pick.p-game::before  { background: var(--mast); }
+.pick.p-quiz::before  { background: var(--witch); }
+
+.pick-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.pick-emoji {
+  font-size: 30px;
+  line-height: 1;
+}
+.pick-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+}
+.pick-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 40px;
+  color: #fff;
+}
+.p-guide .pick-badge { background: var(--seer); }
+.p-game  .pick-badge { background: var(--mast); }
+.p-quiz  .pick-badge { background: var(--witch); }
+
+.pick-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text2);
+}
+.pick-arrow {
+  position: absolute;
+  right: 22px;
+  bottom: 20px;
+  font-size: 20px;
+  color: var(--accent);
+  transition: transform .2s;
+}
+.pick:hover .pick-arrow { transform: translateX(5px); }
+
+/* ── HOW IT WORKS ── */
+.how {
+  margin-top: 2.5rem;
+  background: var(--bg2);
+  border-radius: 18px;
+  padding: 24px 24px;
+}
+.how-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.how-steps {
+  display: grid;
+  gap: 12px;
+}
+.how-step {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.how-num {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+.how-text { font-size: 14px; line-height: 1.55; color: var(--text); }
+.how-text strong { font-weight: 600; }
+
+/* ── FOOTER ── */
+.foot {
+  margin-top: 2.5rem;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+}
+.foot a { color: var(--accent); text-decoration: none; font-weight: 500; }
+
+@media (max-width: 420px) {
+  .shelf { height: 160px; }
+  .book .spine-label { font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+</style>
+
+<style>
+  #app-view { position: fixed; inset: 0; z-index: 1000; background: #FFF8F0; display: none; flex-direction: column; }
+  #app-view.active { display: flex; }
+  #app-bar { flex-shrink: 0; display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #FFFFFF; border-bottom: 1.5px solid #EDD8C8; }
+  #app-back { display: inline-flex; align-items: center; gap: 6px; background: #FF6B35; color: #fff; border: none; font-family: 'Noto Sans Thai', sans-serif; font-size: 14px; font-weight: 600; padding: 9px 18px; border-radius: 40px; cursor: pointer; }
+  #app-back:hover { background: #E85A28; }
+  #app-bar-title { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: #2D1810; }
+  #app-frame { flex: 1; width: 100%; border: none; }
+  body.app-open { overflow: hidden; }
+</style>
+</head>
+<body>
+<div id="home">
+
+<div class="wrap">
+
+  <div class="brand">📚 ก๊องแก๊ง · GongGang</div>
+
+  <h1 class="hero-title">อ่านกับเพื่อน<br><em>Judge a Friend</em><br>by Their Book Cover</h1>
+  <p class="hero-sub">เพราะหนังสือที่อ่าน บอกตัวตนและช่วงเวลาของชีวิตได้มากกว่าที่เราคิด มาค้นหากันว่าทุกคนเป็นนักอ่านแบบไหนผ่านควิซบอกตัวตนนักอ่านจากลักษณะนิสัยที่คุณมีต่อหนังสือ และเล่นการ์ดเกมเพื่อรู้จักเพื่อนของคุณให้มากยิ่งขึ้น!</p>
+
+  <!-- BOOKSHELF -->
+  <div class="shelf">
+    <div class="book" style="background:#7C6FD4" title="The Seer"><span class="spine-sigil">🔮</span><span class="spine-label">THE SEER</span></div>
+    <div class="book" style="background:#2DB38A" title="The Alchemist"><span class="spine-sigil">⚗️</span><span class="spine-label">ALCHEMIST</span></div>
+    <div class="book" style="background:#E8960A" title="The Mastermind"><span class="spine-sigil">♟️</span><span class="spine-label">MASTERMIND</span></div>
+    <div class="book" style="background:#E84040" title="The Werewolf"><span class="spine-sigil">🐺</span><span class="spine-label">WEREWOLF</span></div>
+    <div class="book" style="background:#52A830" title="The Witch"><span class="spine-sigil">🧙</span><span class="spine-label">THE WITCH</span></div>
+    <div class="book" style="background:#7A7870" title="The Phantom"><span class="spine-sigil">👻</span><span class="spine-label">PHANTOM</span></div>
+  </div>
+  <div class="shelf-plank"></div>
+
+  <!-- PICK -->
+  <div class="section-label">เลือกเล่นได้เลย</div>
+  <div class="cards">
+
+    <a href="#" onclick="showApp('quiz');return false;" class="pick p-quiz">
+      <div class="pick-top">
+        <span class="pick-emoji">✨</span>
+        <span class="pick-title">ทำ Quiz</span>
+        <span class="pick-badge">10 คำถาม</span>
+      </div>
+      <div class="pick-desc">ตอบ 10 คำถามสั้นๆ แล้วดูว่าคุณเป็นนักอ่านแบบไหนใน 6 archetypes — เล่นคนเดียวได้ ใช้เวลาไม่ถึง 5 นาที</div>
+      <span class="pick-arrow">→</span>
+    </a>
+
+    <a href="#" onclick="showApp('game');return false;" class="pick p-game">
+      <div class="pick-top">
+        <span class="pick-emoji">🃏</span>
+        <span class="pick-title">เล่น Card Game</span>
+        <span class="pick-badge">3–8 คน</span>
+      </div>
+      <div class="pick-desc">เกมการ์ดชวนเพื่อนคุยเรื่องหนังสือ — เปิดการ์ดคำถาม ตอบ แล้วทำ Wildcard ด้วยกันทั้งวง เหมาะกับวงเพื่อนหรือปาร์ตี้</div>
+      <span class="pick-arrow">→</span>
+    </a>
+
+    <a href="#" onclick="showApp('guide');return false;" class="pick p-guide">
+      <div class="pick-top">
+        <span class="pick-emoji">📖</span>
+        <span class="pick-title">ดู 6 Archetypes</span>
+        <span class="pick-badge">คู่มือ</span>
+      </div>
+      <div class="pick-desc">ทำความรู้จักนักอ่านทั้ง 6 แบบ — ผู้หยั่งรู้ นักแปรธาตุ นักวางหมาก มนุษย์หมาป่า แม่มด และนักอ่านในเงามืด</div>
+      <span class="pick-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- HOW -->
+  <div class="how">
+    <div class="how-title">เริ่มยังไงดี?</div>
+    <div class="how-steps">
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-text"><strong>เล่นคนเดียว</strong> — เริ่มที่ Quiz เพื่อรู้ว่าตัวเองเป็นนักอ่านแบบไหน แล้วไปอ่านรายละเอียด archetype ต่อ</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-text"><strong>เล่นกับเพื่อน</strong> — เปิด Card Game บนจอเดียว ผลัดกันเปิดการ์ด ชวนกันคุยเรื่องหนังสือและความคิด</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-text"><strong>แชร์ผลลัพธ์</strong> — ได้ archetype แล้วแชร์ให้เพื่อนดู ชวนกันมาเล่นต่อ</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    สร้างโดย <a href="https://instagram.com/GongGangPeople" target="_blank" rel="noopener">@GongGangPeople</a><br>
+    พื้นที่เล่นจริงจังของคนโต
+  </div>
+
+</div>
+
+
+</div>
+
+<div id="app-view">
+  <div id="app-bar">
+    <button id="app-back" onclick="goHome()">← หน้าหลัก</button>
+    <span id="app-bar-title">อ่านกับเพื่อน</span>
+  </div>
+  <iframe id="app-frame" title="app"></iframe>
+</div>
+<script>
+const APPS = {"guide": "<!DOCTYPE html>\n<html lang=\"th\">\n<head>... (TRUNCATED_IN_INDEX_FOR_PUSH)" , "game": "<!DOCTYPE html>\n<html lang=\"th\">\n<head>... (TRUNCATED_IN_INDEX_FOR_PUSH)", "quiz": "<!DOCTYPE html>\n<html lang=\"th\">\n<head>... (TRUNCATED_IN_INDEX_FOR_PUSH)"};
+const TITLES = { guide: '6 Archetypes', game: 'Card Game', quiz: 'Quiz' };
+function showApp(name){const f=document.getElementById('app-frame');f.srcdoc=APPS[name];document.getElementById('app-bar-title').textContent=TITLES[name]||'อ่านกับเพื่อน';document.getElementById('app-view').classList.add('active');document.body.classList.add('app-open');window.scrollTo(0,0);}
+function goHome(){document.getElementById('app-view').classList.remove('active');document.getElementById('app-frame').srcdoc='';document.body.classList.remove('app-open');}
+window.addEventListener('message',(e)=>{const nav=e.data&&e.data.nav;if(!nav)return;if(nav==='home')goHome();else showApp(nav);});
+</script>
+
+<!-- Service worker registration -->
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').then(reg => {
+      console.log('Service worker registered:', reg);
+    }).catch(err => console.warn('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>
